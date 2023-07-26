@@ -13,7 +13,7 @@ exports.create = async (req, res) =>{
             src: file.path,
         });
 
-        await picture.sabe();
+        await picture.save();
 
         res.json({picture, msg: "Imagem Salva com Sucesso!"});
 
