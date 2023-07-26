@@ -1,6 +1,8 @@
 const Picture = require("../models/Picture");
 const Picure = require("../models/Picture");
 
+const fs = require("fs");
+
 exports.create = async (req, res) =>{
     try {
         
@@ -31,5 +33,25 @@ exports.findAll = async (req, res) =>{
         
     } catch (error) {
         res.status(500).json({message: "Erro ao buscar Imagens."});
+    }
+}
+
+exports.remove = async (req, res) => {
+    try {
+        
+        const picture = await Picture.findById(req.params.id)
+
+        if (!picture) {
+            return res.status(404).json({message: "Imagem não Encontrada"});
+        }
+
+        fs.unlinkSync(picture.src);
+
+        await picture.remove();
+
+        res.json({ message: "Imagem Removida com Sucesso!"});
+
+    } catch (error) {
+        res.status(500).json({message: "Erro ao excluir imagem."})
     }
 }
