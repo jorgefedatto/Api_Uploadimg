@@ -25,7 +25,7 @@ exports.create = async (req, res) =>{
 exports.findAll = async (req, res) =>{
     try {
 
-        const pictures = await picture.find();
+        const pictures = await Picture.find();
 
         res.json(pictures);
         
