@@ -46,7 +46,7 @@ exports.remove = async (req, res) => {
             res.json({ message: "Imagem removida com Sucesso!"});            
 
         } catch (error) {
-            res.status(500).json({ message: "Erro ao excluir imagem."})
+            res.status(500).json({ message: "Erro ao excluir imagem."});
         }
     } else {
         res.status(404).json({ message: "Imagem não Encontrada."});
