@@ -1,31 +1,82 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const Login = require("../models/Login.js");
-const config = require('../config/config.js');
+const User = require("../models/User.js");
 
+require('dotenv').config();
+
+//Rota Publica para Gerar Token
 exports.create = async (req, res) => {
-    const { cnpj, senha } = req.body;
+    const { cnpj, password } = req.body;
 
-    try {        
-        const login = await Login.findOne({ cnpj });
+    if (!cnpj){
+        return res.status(422).json({ msg: 'O CNPJ é Obrigatório!'});
+    }
 
-        if (!login) {
-            return res.status(404).json({ message: 'CNPJ não encontrado.' });
-        }
-        console.log(login.senha);
+    if (!password){
+        return res.status(422).json({ msg: 'A senha é Obrigatória!'});        
+    }
+
+    const user = await User.findOne({ cnpj: cnpj});
+    
+    if (!user){
+        return res.status(422).json({ msg: 'Usuario não encontrado, por Favor Verifique!'});
+    }
+
+    //check password match e gera token
+
+    const checkPassword = await bcrypt.compare(password, user.password);
+    
+    if (!checkPassword) {
+        return res.status(422).json({ msg: 'Senha inválida'});
+    }
+
+    try {
+
+        const secret = process.env.SECRET;
+
+        const token = jwt.sign(
+          {
+            id: user._id,            
+          },
+          secret,
+        );
+
+        res.status(200).json({ msg: 'Usuário autenticado com Sucesso', token})
         
-        const isPasswordValid = await bcrypt.compare(senha, login.senha);
-
-        if (!isPasswordValid) {
-            return res.status(401).json({ message: 'Senha incorreta.' });
-        }
-
-        const token = jwt.sign({ cnpj: user.cnpj }, config.secret, {
-            expiresIn: '1h',
-        });
-
-        res.json({ token });
     } catch (error) {
-        res.status(500).json({ message: 'Erro no servidor.' });
+        return res.status(500).json({ msg: 'Aconteceu um Erro no Servidor!'})
     }
 };
+
+exports.private = checkToken, async (req, res) => {
+    const id = req.params.id;
+
+    const user = await User.findById(id, '-password');
+
+    if (!user){
+        return res.status(404).json({ msg: 'Usuario não encontrado'});
+    }
+
+    res.status(200).json({ user });
+}
+
+function checkToken(req, res, next){
+
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(" ")[1]
+
+    if(!token){
+        return res.status(401).json({ msg:'Acesso Negado'});
+    }
+
+    try {
+      const secret = process.env.SECRET;
+      
+      jwt.verify(token, secret);
+
+      next();
+    } catch (error) {
+        res.status(400).json({ msg: "Token Inválido"})
+    }
+}
+

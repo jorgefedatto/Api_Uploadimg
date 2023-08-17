@@ -1,20 +1,16 @@
 const express = require("express");
 const app = express();
-const bodyParser = require("body-parser");
 const loginRoutes = require('./routes/login.js');
-
+const pictureRouter = require("./routes/picture.js");
+const createUserRouter = require("./routes/createUser.js");
 require("dotenv").config();
 require("./db");
 
 const port = process.env.PORT || 3000;
 
-
-const pictureRouter = require("./routes/picture.js");
-
 app.use("/pictures", pictureRouter);
 
-
-app.use(bodyParser.json());
+app.use("/create", createUserRouter);
 
 app.use("/login", loginRoutes);
 

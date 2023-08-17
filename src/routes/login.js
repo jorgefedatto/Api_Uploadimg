@@ -7,4 +7,6 @@ const { Module } = require("module");
 
 router.post("/", LoginController.create);
 
+router.post("/user/:id", LoginController.private);
+
 module.exports = router;
