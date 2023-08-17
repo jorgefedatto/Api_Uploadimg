@@ -1,20 +1,20 @@
-const User = require("./models/User.js");
+const User = require("../models/User.js");
 const bcrypt = require("bcrypt");
 
 require('dotenv').config();
 
-exports.create = async (req, res) => {
-    const { cnpj, password } = req.body
-
+exports.create = async (req, res) =>{
+    const { cnpj, password } = req.body;
+    
     if (!cnpj){
-        return res.status(422).json({ msg: 'Cnpj é Obrigatório!'});
+        return res.status(422).json({ msg: 'CNPJ é Obrigatório!'});
     }
 
     if (!password){
         return res.status(422).json({ msg: 'Senha é Obrigatória!'});
     }
 
-    const userExists = await User.FindOne({ cnpj: cnpj});
+    const userExists = await User.findOne({ cnpj: cnpj});
     
     if (userExists) {
         return res.status(422).json({ msg: 'CNPJ Já Existente em Nossa Base de Dados!'});
@@ -26,7 +26,7 @@ exports.create = async (req, res) => {
     const user = new User({
         cnpj,
         password: passwordHash,
-    });
+    })
 
     try {
 

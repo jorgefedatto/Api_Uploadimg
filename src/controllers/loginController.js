@@ -48,10 +48,12 @@ exports.create = async (req, res) => {
     }
 };
 
-exports.private = async (req, res) => {
+exports.private = async (req, res) =>{
     const id = req.params.id;
 
     const user = await User.findById(id, '-password');
+
+    console.log('teste');
 
     if (!user){
         return res.status(404).json({ msg: 'Usuario não encontrado'});
