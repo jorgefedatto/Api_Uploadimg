@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const jwt = require("jsonwebtoken");
 
 const LoginController = require("../controllers/loginController.js");
 
@@ -12,6 +13,8 @@ function checkToken(req, res, next){
 
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(" ")[1];
+
+    console.log(token);
 
     if(!token){
         return res.status(401).json({ msg:'Acesso Negado'});

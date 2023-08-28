@@ -53,8 +53,6 @@ exports.private = async (req, res) =>{
 
     const user = await User.findById(id, '-password');
 
-    console.log('teste');
-
     if (!user){
         return res.status(404).json({ msg: 'Usuario não encontrado'});
     }
